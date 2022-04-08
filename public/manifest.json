@@ -1,0 +1,10 @@
+{
+  "name": "recorder",
+  "description": "Build an Extension!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "activeTab", "scripting"]
+}

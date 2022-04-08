@@ -1,0 +1,25 @@
+{
+  "name": "automation-recorder",
+  "version": "1.0.0",
+  "description": "a tool too record automation",
+  "main": "index.js",
+  "author": "Eden Gal",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "babel-loader": "^8.2.4",
+    "copy-webpack-plugin": "^10.2.4",
+    "html-webpack-plugin": "^5.5.0",
+    "webpack": "^5.71.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "scripts": {
+    "build": " webpack --config webpack.config.js"
+  }
+}
