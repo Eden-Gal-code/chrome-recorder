@@ -1,3 +1,4 @@
+import { Box, Button, Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import { render } from 'react-dom'
 
@@ -19,9 +20,8 @@ const Popup = () => {
       }),
     []
   )
-  
+
   const handleStartRecordClick = (e) => {
-    console.log(isRecordingState)
     setIsRecordingState(true)
     insertFuncToTab(startRecord)
   }
@@ -37,8 +37,13 @@ const Popup = () => {
           this.removeEventListener('click', getClickedElements, false)
         } else {
           e = e || window.event
-          var target = e.target || e.srcElement,
-            text = target.textContent || target.innerText
+          var target = e.target || e.srcElement
+          // text = target.textContent || target.innerText
+          chrome.storage.sync.get(['elements'], ({ elements }) => {
+            console.log('before change', elements)
+            chrome.storage.sync.set({ elements: [...elements, target] })
+          })
+
           console.log(target)
         }
       })
@@ -52,14 +57,26 @@ const Popup = () => {
   }
 
   return (
-    <div>
-      <h1>Recorder</h1>
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      flexDirection="column"
+      height={300}
+      width={200}
+    >
+      <Typography variant="h5">Recorder</Typography>
+
       {!isRecordingState ? (
-        <button onClick={handleStartRecordClick}>Record</button>
+        <Button variant="outlined" onClick={handleStartRecordClick}>
+          Record
+        </Button>
       ) : (
-        <button onClick={handleStopRecordClick}>Stop</button>
+        <Button variant="outlined" onClick={handleStopRecordClick}>
+          Stop
+        </Button>
       )}
-    </div>
+    </Box>
   )
 }
 
