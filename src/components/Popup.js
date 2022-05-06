@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, List, ListItem, Typography } from '@mui/material'
 import React, { useState, useEffect } from 'react'
 import { render } from 'react-dom'
 
@@ -12,12 +12,17 @@ const insertFuncToTab = (func) =>
 
 const Popup = () => {
   const [isRecordingState, setIsRecordingState] = useState(false)
+  const [elementList, setElementList] = useState([])
 
   useEffect(
     () =>
-      chrome.storage.sync.get(['isRecording'], ({ isRecording }) => {
-        setIsRecordingState(isRecording)
-      }),
+      chrome.storage.sync.get(
+        ['isRecording', 'elements'],
+        ({ isRecording, elements }) => {
+          setIsRecordingState(isRecording)
+          elements && setElementList(elements)
+        }
+      ),
     []
   )
 
@@ -27,24 +32,26 @@ const Popup = () => {
   }
   const handleStopRecordClick = (e) => {
     setIsRecordingState(false)
+    setElementList([])
     insertFuncToTab(stopRecord)
   }
 
   const startRecord = () => {
     function getClickedElements(e) {
-      chrome.storage.sync.get(['isRecording'], ({ isRecording }) => {
+      chrome.storage.sync.get('isRecording', ({ isRecording }) => {
         if (!isRecording) {
           this.removeEventListener('click', getClickedElements, false)
         } else {
           e = e || window.event
           var target = e.target || e.srcElement
-          // text = target.textContent || target.innerText
-          chrome.storage.sync.get(['elements'], ({ elements }) => {
-            console.log('before change', elements)
-            chrome.storage.sync.set({ elements: [...elements, target] })
+          text = target.textContent || target.innerText
+          chrome.storage.sync.get('elements', ({ elements }) => {
+            if (elements instanceof Array) {
+              elements.push(text)
+            }
+            const newElements = elements ? elements : [text]
+            chrome.storage.sync.set({ elements: newElements })
           })
-
-          console.log(target)
         }
       })
     }
@@ -53,7 +60,7 @@ const Popup = () => {
   }
 
   const stopRecord = () => {
-    chrome.storage.sync.set({ isRecording: false })
+    chrome.storage.sync.set({ isRecording: false, elements: null })
   }
 
   return (
@@ -67,6 +74,15 @@ const Popup = () => {
     >
       <Typography variant="h5">Recorder</Typography>
 
+      <List>
+        {elementList.map((text) => {
+          return (
+            <ListItem>
+              <Typography variant="body1">{text}</Typography>
+            </ListItem>
+          )
+        })}
+      </List>
       {!isRecordingState ? (
         <Button variant="outlined" onClick={handleStartRecordClick}>
           Record
